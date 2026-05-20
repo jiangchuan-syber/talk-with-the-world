@@ -1,73 +1,92 @@
-# React + TypeScript + Vite
+# cn2en
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+在 Windows 上无缝将选中的中文翻译成英文的桌面工具。应用常驻系统托盘，在任意程序中选中中文后按下快捷键即可翻译，并尽量恢复你的剪贴板内容。
 
-Currently, two official plugins are available:
+## 功能
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **全局快捷键**：选中中文后按 `Ctrl + Alt + T`，自动复制、翻译、粘贴英文结果
+- **剪贴板友好**：翻译完成后会尝试恢复翻译前的剪贴板文本
+- **系统托盘**：无前台主窗口，通过托盘图标打开设置或暂停/启用
+- **可配置 API**：支持 DeepSeek 及任意 OpenAI 兼容的 `chat/completions` 接口
+- **可调延迟**：复制/粘贴等待时间可在 80–800 ms 间调节，适配不同应用响应速度
 
-## React Compiler
+## 环境要求
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **操作系统**：Windows（依赖 UI Automation、全局键盘钩子等 Windows API）
+- **Node.js**：用于前端构建与 Tauri 开发脚本
+- **Rust**：1.77.2 及以上（见 `src-tauri/Cargo.toml`）
+- **API Key**：需在设置中自行填写；密钥不会打包进安装程序，仅保存在本机配置文件中
 
-## Expanding the ESLint configuration
+## 快速开始
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 安装依赖
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 开发模式
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run tauri:dev
 ```
+
+会启动 Vite 开发服务器并运行 Tauri 应用。
+
+### 构建发布版
+
+```bash
+npm run tauri:build
+```
+
+产物位于 `src-tauri/target/release/bundle/`。
+
+## 使用方法
+
+1. 首次运行后，从系统托盘打开 **设置**，填写 API Key，并按需调整 API 地址、模型与复制/粘贴等待时间，点击保存。
+2. 在 Word、浏览器、编辑器等任意窗口中**选中一段中文**。
+3. 按下 **`Ctrl + Alt + T`**，等待翻译完成；选区会被替换为英文译文。
+4. 可通过设置页或托盘菜单**暂停/启用**翻译服务。
+
+### 默认 API 配置
+
+| 项 | 默认值 |
+| --- | --- |
+| API 地址 | `https://api.deepseek.com/v1/chat/completions` |
+| 模型 | `deepseek-v4-flash`（快速）/ `deepseek-v4-pro`（质量） |
+| 复制/粘贴等待 | 180 ms（可在界面中调节） |
+
+也可将 API 地址改为自建代理或其它兼容服务的完整 URL。
+
+## 技术栈
+
+- **前端**：React 19 + TypeScript + Vite + Tailwind CSS
+- **桌面壳**：Tauri 2
+- **后端**：Rust（`reqwest` 调用翻译 API，`uiautomation` / 键盘模拟处理选区与剪贴板）
+
+## 项目结构（简要）
+
+```
+cn2en/
+├── src/                 # React 设置界面
+├── src-tauri/
+│   ├── src/
+│   │   ├── translate_service.rs   # 翻译 API 调用
+│   │   ├── selection_translate.rs # 选区复制、粘贴与剪贴板恢复
+│   │   ├── input_monitor.rs       # 输入与快捷键监听
+│   │   └── tray.rs                # 系统托盘
+│   └── tauri.conf.json
+└── package.json
+```
+
+## 其它 npm 脚本
+
+| 命令 | 说明 |
+| --- | --- |
+| `npm run dev` | 仅启动 Vite 前端（不启动 Tauri） |
+| `npm run build` | 构建前端到 `dist/` |
+| `npm run lint` | 运行 ESLint |
+
+## 许可证
+
+见仓库中的许可证文件（如有）。
