@@ -16,7 +16,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - uses: dtolnay/rust-toolchain@stable
@@ -37,4 +37,6 @@ jobs:
             快捷键：`Ctrl + Alt + T`（先选中中文）
           releaseDraft: false
           prerelease: false
+          # 默认会跑 `npm run tauri build`，本项目脚本名为 tauri:build
+          tauriScript: npm run tauri:build --
           args: --bundles nsis
