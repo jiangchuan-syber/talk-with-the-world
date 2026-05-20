@@ -2,6 +2,17 @@
 
 在 Windows 上无缝将选中的中文翻译成英文的桌面工具。应用常驻系统托盘，在任意程序中选中中文后按下快捷键即可翻译，并尽量恢复你的剪贴板内容。
 
+## 下载（Windows）
+
+| 版本 | 说明 |
+| --- | --- |
+| [**最新版**](https://github.com/jiangchuan-syber/moss/releases/latest) | 始终指向当前最新 Release |
+| [**v0.1.0**](https://github.com/jiangchuan-syber/moss/releases/tag/v0.1.0) | 划译 0.1.0，x64 安装包 `划译_0.1.0_x64-setup.exe` |
+
+直接下载 v0.1.0 安装包（Release 构建完成后可用）：
+
+<https://github.com/jiangchuan-syber/moss/releases/download/v0.1.0/%E5%88%92%E8%AF%91_0.1.0_x64-setup.exe>
+
 ## 功能
 
 - **全局快捷键**：选中中文后按 `Ctrl + Alt + T`，自动复制、翻译、粘贴英文结果
@@ -39,7 +50,9 @@ npm run tauri:dev
 npm run tauri:build
 ```
 
-产物位于 `src-tauri/target/release/bundle/`。
+产物位于 `src-tauri/target/release/bundle/nsis/`，例如 `划译_0.1.0_x64-setup.exe`。安装包对外名称为 **划译**（`productName`）；当前仅生成 NSIS 安装包（中文产品名下 MSI 易失败）。
+
+发布新版本：推送 `v*` 标签（如 `v0.1.1`）会触发 [`.github/workflows/release.yml`](.github/workflows/release.yml) 自动构建并上传到 [Releases](https://github.com/jiangchuan-syber/moss/releases)。
 
 ## 使用方法
 
