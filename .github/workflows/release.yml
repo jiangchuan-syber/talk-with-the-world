@@ -24,19 +24,21 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build and publish to GitHub Releases
-        uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build NSIS installer
+        run: npm run tauri:build -- --bundles nsis
+
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
         with:
-          tagName: ${{ github.ref_name }}
-          releaseName: 划译 ${{ github.ref_name }}
-          releaseBody: |
+          tag_name: ${{ github.ref_name }}
+          name: 划译 ${{ github.ref_name }}
+          body: |
             Windows x64 安装包。安装后从托盘打开设置，填写 API Key 即可使用。
 
             快捷键：`Ctrl + Alt + T`（先选中中文）
-          releaseDraft: false
+          files: src-tauri/target/release/bundle/nsis/*-setup.exe
+          draft: false
           prerelease: false
-          # 默认会跑 `npm run tauri build`，本项目脚本名为 tauri:build
-          tauriScript: npm run tauri:build --
-          args: --bundles nsis
+          fail_on_unmatched_files: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
