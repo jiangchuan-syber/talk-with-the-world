@@ -11,6 +11,16 @@ use crate::translate_service::TranslateService;
 
 const SETTLE_DELAY_MS: u64 = 80;
 
+struct BusyGuard {
+    busy: Arc<AtomicU64>,
+}
+
+impl Drop for BusyGuard {
+    fn drop(&mut self) {
+        self.busy.store(0, Ordering::SeqCst);
+    }
+}
+
 pub struct InputMonitor {
     enabled: Arc<Mutex<bool>>,
     busy: Arc<AtomicU64>,
@@ -72,6 +82,9 @@ impl InputMonitor {
                         let task_busy = busy.clone();
 
                         async_runtime::spawn(async move {
+                            let _guard = BusyGuard {
+                                busy: task_busy,
+                            };
                             let result = selection_translate::translate_selection(
                                 &task_translator,
                                 SETTLE_DELAY_MS,
@@ -85,7 +98,6 @@ impl InputMonitor {
                                     log::warn!("Selection translation skipped/failed: {err}");
                                 }
                             }
-                            task_busy.store(0, Ordering::SeqCst);
                         });
                     }
                 }
