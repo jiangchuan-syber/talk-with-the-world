@@ -35,7 +35,7 @@ jobs:
           body: |
             Windows x64 安装包。安装后从托盘打开设置，填写 API Key 即可使用。
 
-            快捷键：`Ctrl + Alt + T`（先选中中文）
+            快捷键：`Ctrl + Shift + A`（先选中中文）
           files: src-tauri/target/release/bundle/nsis/*-setup.exe
           draft: false
           prerelease: false

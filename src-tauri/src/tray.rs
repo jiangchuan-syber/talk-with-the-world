@@ -16,8 +16,8 @@ pub fn setup_tray(app: &AppHandle) -> tauri::Result<()> {
         }
     }
 
-    let settings_item = MenuItem::with_id(app, "settings", "Settings", true, None::<&str>)?;
-    let quit_item = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
+    let settings_item = MenuItem::with_id(app, "settings", "设置", true, None::<&str>)?;
+    let quit_item = MenuItem::with_id(app, "quit", "退出", true, None::<&str>)?;
     let menu = Menu::with_items(app, &[&settings_item, &quit_item])?;
 
     TrayIconBuilder::with_id(TRAY_ID)
@@ -27,7 +27,7 @@ pub fn setup_tray(app: &AppHandle) -> tauri::Result<()> {
                 .clone(),
         )
         .menu(&menu)
-        .tooltip("cn2en - Active")
+        .tooltip("划译 - 已启用")
         .on_menu_event(|app, event| match event.id.as_ref() {
             "settings" => open_settings_window(&app),
             "quit" => app.exit(0),
@@ -46,9 +46,9 @@ pub fn setup_tray(app: &AppHandle) -> tauri::Result<()> {
                         Ok(enabled) => {
                             if let Some(tray) = app.tray_by_id(TRAY_ID) {
                                 let _ = tray.set_tooltip(Some(if enabled {
-                                    "cn2en - Active"
+                                    "划译 - 已启用"
                                 } else {
-                                    "cn2en - Paused"
+                                    "划译 - 已暂停"
                                 }));
                             }
                         }
@@ -72,7 +72,7 @@ pub fn open_settings_window(app: &AppHandle) {
     }
 
     let _ = WebviewWindowBuilder::new(app, "settings", WebviewUrl::default())
-        .title("cn2en Settings")
+        .title("划译设置")
         .inner_size(420.0, 500.0)
         .center()
         .resizable(false)

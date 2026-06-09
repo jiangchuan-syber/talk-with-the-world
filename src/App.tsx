@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
 
 const DEFAULT_API_URL = "https://api.deepseek.com/v1/chat/completions";
+const TOGGLE_HINT_KEY = "cn2en.dismissed_toggle_hint";
 
 interface AppConfig {
   api_key: string;
@@ -20,25 +21,35 @@ function App() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [showKey, setShowKey] = useState(false);
+  const [showToggleHint, setShowToggleHint] = useState(false);
 
   useEffect(() => {
     invoke<AppConfig>("get_config").then(setConfig).catch(console.error);
+    if (!localStorage.getItem(TOGGLE_HINT_KEY)) {
+      setShowToggleHint(true);
+    }
   }, []);
+
+  const dismissToggleHint = () => {
+    localStorage.setItem(TOGGLE_HINT_KEY, "1");
+    setShowToggleHint(false);
+  };
 
   const handleSave = async () => {
     setSaving(true);
     setMessage("");
     try {
       await invoke("save_config", { cfg: config });
-      setMessage("Settings saved");
+      setMessage("设置已保存");
       setTimeout(() => setMessage(""), 2000);
     } catch (e) {
-      setMessage(`Error: ${e}`);
+      setMessage(`保存失败：${e}`);
     }
     setSaving(false);
   };
 
   const handleToggle = async () => {
+    dismissToggleHint();
     try {
       const newState = await invoke<boolean>("toggle_enabled");
       setConfig((c) => ({ ...c, enabled: newState }));
@@ -52,7 +63,7 @@ function App() {
       <div className="max-w-md mx-auto">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
-            cn2en Settings
+            划译设置
           </h1>
           <button
             onClick={handleToggle}
@@ -62,15 +73,29 @@ function App() {
                 : "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300"
             }`}
           >
-            {config.enabled ? "Active" : "Paused"}
+            {config.enabled ? "已启用" : "已暂停"}
           </button>
         </div>
 
+        {showToggleHint && (
+          <div className="mb-5 rounded-lg border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/50 p-3 text-sm text-green-800 dark:text-green-200">
+            <p>
+              点击右上角绿色「已启用」按钮，可切换划译的开启与暂停；暂停后快捷键不会触发翻译。
+            </p>
+            <button
+              type="button"
+              onClick={dismissToggleHint}
+              className="mt-2 text-xs font-medium text-green-700 dark:text-green-300 hover:underline"
+            >
+              知道了
+            </button>
+          </div>
+        )}
+
         <div className="space-y-5">
-          {/* API Key */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-              API Key
+              API 密钥
             </label>
             <div className="relative">
               <input
@@ -87,7 +112,7 @@ function App() {
                 onClick={() => setShowKey(!showKey)}
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 px-2 py-1"
               >
-                {showKey ? "Hide" : "Show"}
+                {showKey ? "隐藏" : "显示"}
               </button>
             </div>
             <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
@@ -113,10 +138,9 @@ function App() {
             </p>
           </div>
 
-          {/* Model */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-              Model
+              翻译模型
             </label>
             <select
               value={config.model}
@@ -125,36 +149,34 @@ function App() {
               }
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
             >
-              <option value="deepseek-v4-flash">DeepSeek V4 Flash (Fast)</option>
-              <option value="deepseek-v4-pro">DeepSeek V4 Pro (Quality)</option>
+              <option value="deepseek-v4-flash">DeepSeek V4 Flash（快速）</option>
+              <option value="deepseek-v4-pro">DeepSeek V4 Pro（高质量）</option>
             </select>
           </div>
 
           <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60 p-3 text-sm text-gray-600 dark:text-gray-300">
             <div className="font-medium text-gray-800 dark:text-gray-100 mb-1">
-              Shortcut
+              快捷键
             </div>
             <div>
-              Select Chinese text anywhere, then press{" "}
-              <span className="font-semibold">Ctrl + Alt + T</span>.
-              cn2en will copy the selection, translate it, paste the English
-              result over the selection, and restore your clipboard text.
+              在任意位置选中中文后，按下{" "}
+              <span className="font-semibold">Ctrl + Shift + A</span>
+              。划译会复制选区、翻译成英文、粘贴替换原文，并恢复你原来的剪贴板内容。
             </div>
           </div>
 
-          {/* Save */}
           <button
             onClick={handleSave}
             disabled={saving}
             className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg text-sm font-medium transition-colors"
           >
-            {saving ? "Saving..." : "Save"}
+            {saving ? "保存中…" : "保存设置"}
           </button>
 
           {message && (
             <p
               className={`text-sm text-center ${
-                message.startsWith("Error")
+                message.startsWith("保存失败")
                   ? "text-red-500"
                   : "text-green-600 dark:text-green-400"
               }`}
@@ -165,8 +187,7 @@ function App() {
         </div>
 
         <p className="mt-6 text-xs text-gray-400 text-center">
-          cn2en stays in the tray and translates selected Chinese text when you
-          press Ctrl + Alt + T.
+          划译常驻系统托盘，选中中文后按 Ctrl + Shift + A 即可翻译。
         </p>
       </div>
     </div>

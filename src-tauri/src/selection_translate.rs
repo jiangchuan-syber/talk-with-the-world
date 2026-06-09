@@ -12,8 +12,8 @@ use windows::Win32::System::DataExchange::GetClipboardSequenceNumber;
 #[cfg(windows)]
 use windows::Win32::UI::Input::KeyboardAndMouse::{
     GetAsyncKeyState, SendInput, INPUT, INPUT_0, INPUT_KEYBOARD, KEYBDINPUT, KEYBD_EVENT_FLAGS,
-    KEYEVENTF_KEYUP, VIRTUAL_KEY, VK_CONTROL, VK_INSERT, VK_LCONTROL, VK_LMENU, VK_MENU,
-    VK_RCONTROL, VK_RMENU,
+    KEYEVENTF_KEYUP, VIRTUAL_KEY, VK_CONTROL, VK_INSERT, VK_LCONTROL, VK_LSHIFT, VK_RSHIFT,
+    VK_RCONTROL, VK_SHIFT,
 };
 
 struct ClipboardBackup {
@@ -195,10 +195,10 @@ fn wait_for_modifier_keys_release(timeout_ms: u64) -> Result<(), String> {
         let ctrl_down = unsafe { GetAsyncKeyState(VK_CONTROL.0 as i32) } < 0
             || unsafe { GetAsyncKeyState(VK_LCONTROL.0 as i32) } < 0
             || unsafe { GetAsyncKeyState(VK_RCONTROL.0 as i32) } < 0;
-        let alt_down = unsafe { GetAsyncKeyState(VK_MENU.0 as i32) } < 0
-            || unsafe { GetAsyncKeyState(VK_LMENU.0 as i32) } < 0
-            || unsafe { GetAsyncKeyState(VK_RMENU.0 as i32) } < 0;
-        if !ctrl_down && !alt_down {
+        let shift_down = unsafe { GetAsyncKeyState(VK_SHIFT.0 as i32) } < 0
+            || unsafe { GetAsyncKeyState(VK_LSHIFT.0 as i32) } < 0
+            || unsafe { GetAsyncKeyState(VK_RSHIFT.0 as i32) } < 0;
+        if !ctrl_down && !shift_down {
             thread::sleep(Duration::from_millis(30));
             return Ok(());
         }

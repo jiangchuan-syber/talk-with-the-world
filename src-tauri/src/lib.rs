@@ -110,7 +110,7 @@ pub fn run() {
             monitor.start(receiver);
             tray::setup_tray(app.handle())?;
 
-            log::info!("cn2en started. Press Ctrl+Alt+T to translate selected text.");
+            log::info!("cn2en started. Press Ctrl+Shift+A to translate selected text.");
             Ok(())
         })
         .run(tauri::generate_context!())
