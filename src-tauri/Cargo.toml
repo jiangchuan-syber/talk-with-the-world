@@ -1,6 +1,6 @@
 [package]
 name = "cn2en"
-version = "0.1.0"
+version = "0.1.1"
 description = "Seamless Chinese to English translator"
 authors = ["you"]
 license = ""

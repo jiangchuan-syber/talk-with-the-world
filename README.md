@@ -31,12 +31,13 @@
 
 | 版本 | 说明 |
 | --- | --- |
-| [**最新版**](https://github.com/jiangchuan-syber/moss/releases/latest) | 始终指向当前最新 Release |
-| [**v0.1.0**](https://github.com/jiangchuan-syber/moss/releases/tag/v0.1.0) | 划译 0.1.0，x64 安装包 `划译_0.1.0_x64-setup.exe` |
+| [**最新版**](https://github.com/jiangchuan-syber/talk-with-the-world/releases/latest) | 始终指向当前最新 Release |
+| [**v0.1.1**](https://github.com/jiangchuan-syber/talk-with-the-world/releases/tag/v0.1.1) | 划译 0.1.1，x64 安装包 `划译_0.1.1_x64-setup.exe` |
+| [**v0.1.0**](https://github.com/jiangchuan-syber/talk-with-the-world/releases/tag/v0.1.0) | 划译 0.1.0，x64 安装包 `划译_0.1.0_x64-setup.exe` |
 
-直接下载 v0.1.0 安装包（Release 构建完成后可用）：
+直接下载 v0.1.1 安装包（Release 构建完成后可用）：
 
-<https://github.com/jiangchuan-syber/moss/releases/download/v0.1.0/%E5%88%92%E8%AF%91_0.1.0_x64-setup.exe>
+<https://github.com/jiangchuan-syber/talk-with-the-world/releases/download/v0.1.1/%E5%88%92%E8%AF%91_0.1.1_x64-setup.exe>
 
 ## 功能
 
@@ -74,9 +75,9 @@ npm run tauri:dev
 npm run tauri:build
 ```
 
-产物位于 `src-tauri/target/release/bundle/nsis/`，例如 `划译_0.1.0_x64-setup.exe`。安装包对外名称为 **划译**（`productName`）；当前仅生成 NSIS 安装包（中文产品名下 MSI 易失败）。
+产物位于 `src-tauri/target/release/bundle/nsis/`，例如 `划译_0.1.1_x64-setup.exe`。安装包对外名称为 **划译**（`productName`）；当前仅生成 NSIS 安装包（中文产品名下 MSI 易失败）。
 
-发布新版本：推送 `v*` 标签（如 `v0.1.1`）会触发 [`.github/workflows/release.yml`](.github/workflows/release.yml) 自动构建并上传到 [Releases](https://github.com/jiangchuan-syber/moss/releases)。
+发布新版本：推送 `v*` 标签（如 `v0.1.1`）会触发 [`.github/workflows/release.yml`](.github/workflows/release.yml) 自动构建并上传到 [Releases](https://github.com/jiangchuan-syber/talk-with-the-world/releases)。
 
 ## 使用方法
 
