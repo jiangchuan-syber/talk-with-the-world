@@ -2,16 +2,9 @@ use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
 
-/// OpenAI-compatible `POST .../chat/completions` endpoint (default: DeepSeek).
-pub fn default_api_base_url() -> String {
-    "https://api.deepseek.com/v1/chat/completions".to_string()
-}
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AppConfig {
     pub api_key: String,
-    #[serde(default = "default_api_base_url")]
-    pub api_base_url: String,
     pub model: String,
     pub enabled: bool,
 }
@@ -20,7 +13,6 @@ impl Default for AppConfig {
     fn default() -> Self {
         Self {
             api_key: String::new(),
-            api_base_url: default_api_base_url(),
             model: "deepseek-v4-flash".to_string(),
             enabled: true,
         }
@@ -31,15 +23,6 @@ impl AppConfig {
     pub fn normalized(mut self) -> Self {
         if self.model != "deepseek-v4-flash" && self.model != "deepseek-v4-pro" {
             self.model = "deepseek-v4-flash".to_string();
-        }
-
-        self.api_base_url = self.api_base_url.trim().to_string();
-        if self.api_base_url.is_empty() {
-            self.api_base_url = default_api_base_url();
-        }
-        let url_lower = self.api_base_url.to_ascii_lowercase();
-        if !(url_lower.starts_with("https://") || url_lower.starts_with("http://")) {
-            self.api_base_url = default_api_base_url();
         }
 
         self

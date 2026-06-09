@@ -12,8 +12,8 @@ use windows::Win32::System::DataExchange::GetClipboardSequenceNumber;
 #[cfg(windows)]
 use windows::Win32::UI::Input::KeyboardAndMouse::{
     GetAsyncKeyState, SendInput, INPUT, INPUT_0, INPUT_KEYBOARD, KEYBDINPUT, KEYBD_EVENT_FLAGS,
-    KEYEVENTF_KEYUP, VIRTUAL_KEY, VK_CONTROL, VK_INSERT, VK_LCONTROL, VK_LSHIFT, VK_RSHIFT,
-    VK_RCONTROL, VK_SHIFT,
+    KEYEVENTF_KEYUP, VIRTUAL_KEY, VK_CONTROL, VK_INSERT, VK_LCONTROL, VK_LSHIFT, VK_RCONTROL,
+    VK_RSHIFT, VK_SHIFT,
 };
 
 struct ClipboardBackup {

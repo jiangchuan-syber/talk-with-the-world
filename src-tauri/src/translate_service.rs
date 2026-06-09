@@ -5,11 +5,13 @@ use std::time::Instant;
 use tokio::sync::Mutex;
 use tokio_util::sync::CancellationToken;
 
+const DEEPSEEK_CHAT_COMPLETIONS_URL: &str =
+    "https://api.deepseek.com/v1/chat/completions";
+
 #[derive(Clone)]
 pub struct TranslateService {
     client: Client,
     api_key: Arc<Mutex<String>>,
-    api_base_url: Arc<Mutex<String>>,
     model: Arc<Mutex<String>>,
     cancel_token: Arc<Mutex<Option<CancellationToken>>>,
 }
@@ -43,9 +45,6 @@ impl TranslateService {
         Self {
             client: Client::new(),
             api_key: Arc::new(Mutex::new(String::new())),
-            api_base_url: Arc::new(Mutex::new(
-                crate::config::default_api_base_url(),
-            )),
             model: Arc::new(Mutex::new("deepseek-v4-flash".to_string())),
             cancel_token: Arc::new(Mutex::new(None)),
         }
@@ -53,10 +52,6 @@ impl TranslateService {
 
     pub async fn set_api_key(&self, key: String) {
         *self.api_key.lock().await = key;
-    }
-
-    pub async fn set_api_base_url(&self, url: String) {
-        *self.api_base_url.lock().await = url;
     }
 
     pub async fn set_model(&self, model: String) {
@@ -70,7 +65,7 @@ impl TranslateService {
         }
 
         let model = self.model.lock().await.clone();
-        let url = self.api_base_url.lock().await.clone();
+        let url = DEEPSEEK_CHAT_COMPLETIONS_URL;
         let request_start = Instant::now();
         let token = CancellationToken::new();
         {

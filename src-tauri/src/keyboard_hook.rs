@@ -33,7 +33,8 @@ pub fn start_hook(sender: mpsc::Sender<KeyEvent>) {
                         0xA2 | 0xA3 => CTRL_DOWN.store(is_keydown, Ordering::SeqCst),
                         0xA0 | 0xA1 => SHIFT_DOWN.store(is_keydown, Ordering::SeqCst),
                         0x41 if is_keydown => {
-                            if CTRL_DOWN.load(Ordering::SeqCst) && SHIFT_DOWN.load(Ordering::SeqCst) {
+                            if CTRL_DOWN.load(Ordering::SeqCst) && SHIFT_DOWN.load(Ordering::SeqCst)
+                            {
                                 if let Some(sender) = SENDER.get() {
                                     let _ = sender.send(KeyEvent::TranslateSelection);
                                 }

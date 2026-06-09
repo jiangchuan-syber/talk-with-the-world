@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { openUrl } from "@tauri-apps/plugin-opener";
 
-const DEFAULT_API_URL = "https://api.deepseek.com/v1/chat/completions";
+const DEEPSEEK_API_PLATFORM_URL = "https://platform.deepseek.com/api_keys";
 const TOGGLE_HINT_KEY = "cn2en.dismissed_toggle_hint";
 
 interface AppConfig {
   api_key: string;
-  api_base_url: string;
   model: string;
   enabled: boolean;
 }
@@ -14,7 +14,6 @@ interface AppConfig {
 function App() {
   const [config, setConfig] = useState<AppConfig>({
     api_key: "",
-    api_base_url: DEFAULT_API_URL,
     model: "deepseek-v4-flash",
     enabled: true,
   });
@@ -94,9 +93,18 @@ function App() {
 
         <div className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-              API 密钥
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                API 密钥
+              </label>
+              <button
+                type="button"
+                onClick={() => openUrl(DEEPSEEK_API_PLATFORM_URL)}
+                className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                前往 DeepSeek 开通 API
+              </button>
+            </div>
             <div className="relative">
               <input
                 type={showKey ? "text" : "password"}
@@ -117,24 +125,6 @@ function App() {
             </div>
             <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
               密钥不会打进安装包里，只会保存在本机的配置文件中；分发给别人时请让对方自行填写。
-            </p>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-              API 地址（OpenAI 兼容 chat/completions）
-            </label>
-            <input
-              type="url"
-              value={config.api_base_url}
-              onChange={(e) =>
-                setConfig((c) => ({ ...c, api_base_url: e.target.value }))
-              }
-              placeholder={DEFAULT_API_URL}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-            />
-            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-              默认 DeepSeek；也可填自建代理或其它兼容服务的完整 URL。
             </p>
           </div>
 

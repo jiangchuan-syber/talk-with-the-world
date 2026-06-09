@@ -19,7 +19,6 @@ async fn main() {
 
     let service = TranslateService::new();
     service.set_api_key(cfg.api_key).await;
-    service.set_api_base_url(cfg.api_base_url).await;
     service.set_model(cfg.model).await;
 
     match service.translate(&input).await {
