@@ -7,7 +7,6 @@ interface AppConfig {
   api_key: string;
   api_base_url: string;
   model: string;
-  delay_ms: number;
   enabled: boolean;
 }
 
@@ -16,7 +15,6 @@ function App() {
     api_key: "",
     api_base_url: DEFAULT_API_URL,
     model: "deepseek-v4-flash",
-    delay_ms: 1700,
     enabled: true,
   });
   const [saving, setSaving] = useState(false);
@@ -130,31 +128,6 @@ function App() {
               <option value="deepseek-v4-flash">DeepSeek V4 Flash (Fast)</option>
               <option value="deepseek-v4-pro">DeepSeek V4 Pro (Quality)</option>
             </select>
-          </div>
-
-          {/* Delay */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-              Copy / Paste Wait: {config.delay_ms}ms
-            </label>
-            <input
-              type="range"
-              min={80}
-              max={800}
-              step={20}
-              value={config.delay_ms}
-              onChange={(e) =>
-                setConfig((c) => ({
-                  ...c,
-                  delay_ms: parseInt(e.target.value),
-                }))
-              }
-              className="w-full accent-blue-500"
-            />
-            <div className="flex justify-between text-xs text-gray-400 mt-1">
-              <span>80ms</span>
-              <span>800ms</span>
-            </div>
           </div>
 
           <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60 p-3 text-sm text-gray-600 dark:text-gray-300">

@@ -43,7 +43,6 @@ async fn save_config(cfg: AppConfig) -> Result<(), String> {
     translator.set_api_key(cfg.api_key.clone()).await;
     translator.set_api_base_url(cfg.api_base_url.clone()).await;
     translator.set_model(cfg.model.clone()).await;
-    monitor.set_delay(cfg.delay_ms).await;
     monitor.set_enabled(cfg.enabled).await;
     *get_app_config().lock().await = cfg.clone();
 
@@ -90,7 +89,6 @@ pub fn run() {
             toggle_enabled
         ])
         .setup(move |app| {
-            let delay_ms = cfg.delay_ms;
             let enabled = cfg.enabled;
             let cfg_for_runtime = cfg.clone();
             let _ = config::init_config_file_if_missing();
@@ -103,7 +101,6 @@ pub fn run() {
 
             let monitor = get_monitor();
             tauri::async_runtime::block_on(async {
-                monitor.set_delay(delay_ms).await;
                 monitor.set_enabled(enabled).await;
             });
 

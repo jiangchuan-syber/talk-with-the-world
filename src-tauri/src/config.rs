@@ -13,7 +13,6 @@ pub struct AppConfig {
     #[serde(default = "default_api_base_url")]
     pub api_base_url: String,
     pub model: String,
-    pub delay_ms: u64,
     pub enabled: bool,
 }
 
@@ -23,7 +22,6 @@ impl Default for AppConfig {
             api_key: String::new(),
             api_base_url: default_api_base_url(),
             model: "deepseek-v4-flash".to_string(),
-            delay_ms: 180,
             enabled: true,
         }
     }
@@ -31,11 +29,6 @@ impl Default for AppConfig {
 
 impl AppConfig {
     pub fn normalized(mut self) -> Self {
-        if self.delay_ms > 800 {
-            self.delay_ms = 180;
-        }
-        self.delay_ms = self.delay_ms.clamp(80, 800);
-
         if self.model != "deepseek-v4-flash" && self.model != "deepseek-v4-pro" {
             self.model = "deepseek-v4-flash".to_string();
         }

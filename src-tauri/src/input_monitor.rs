@@ -9,8 +9,9 @@ use crate::keyboard_hook::KeyEvent;
 use crate::selection_translate;
 use crate::translate_service::TranslateService;
 
+const SETTLE_DELAY_MS: u64 = 80;
+
 pub struct InputMonitor {
-    operation_delay_ms: Arc<Mutex<u64>>,
     enabled: Arc<Mutex<bool>>,
     busy: Arc<AtomicU64>,
     translator: TranslateService,
@@ -19,15 +20,10 @@ pub struct InputMonitor {
 impl InputMonitor {
     pub fn new(translator: TranslateService) -> Self {
         Self {
-            operation_delay_ms: Arc::new(Mutex::new(180)),
             enabled: Arc::new(Mutex::new(true)),
             busy: Arc::new(AtomicU64::new(0)),
             translator,
         }
-    }
-
-    pub async fn set_delay(&self, ms: u64) {
-        *self.operation_delay_ms.lock().await = ms.clamp(80, 800);
     }
 
     pub async fn set_enabled(&self, val: bool) {
@@ -39,7 +35,6 @@ impl InputMonitor {
     }
 
     pub fn start(&self, receiver: mpsc::Receiver<KeyEvent>) {
-        let operation_delay_ms = self.operation_delay_ms.clone();
         let enabled = self.enabled.clone();
         let busy = self.busy.clone();
         let translator = self.translator.clone();
@@ -69,10 +64,9 @@ impl InputMonitor {
                             continue;
                         }
 
-                        let settle_ms = (*operation_delay_ms.lock().await).clamp(80, 800);
                         log::info!(
                             "Selection shortcut triggered (settle_delay_ms={})",
-                            settle_ms
+                            SETTLE_DELAY_MS
                         );
                         let task_translator = translator.clone();
                         let task_busy = busy.clone();
@@ -80,7 +74,7 @@ impl InputMonitor {
                         async_runtime::spawn(async move {
                             let result = selection_translate::translate_selection(
                                 &task_translator,
-                                settle_ms,
+                                SETTLE_DELAY_MS,
                             )
                             .await;
                             match result {
